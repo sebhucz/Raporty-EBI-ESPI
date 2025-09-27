@@ -14,11 +14,23 @@ jobs:
       - run: python agent_page.py
       - uses: actions/upload-pages-artifact@v3
         with: { path: . }
-  deploy:
-    needs: build-and-deploy
-    permissions: { pages: write, id-token: write }
-    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
-    runs-on: ubuntu-latest
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+deploy:
+  # Potrzebuje zadania 'build-and-deploy', aby się zakończyło
+  needs: build-and-deploy
+
+  # --- POPRAWKA TUTAJ: Dodaj wcięcie (2 spacje) przed 'permissions' ---
+  permissions:
+    pages: write
+    id-token: write
+
+  # Określ środowisko
+  environment:
+    name: github-pages
+    url: ${{ steps.deployment.outputs.page_url }}
+  # Uruchom na maszynie ubuntu
+  runs-on: ubuntu-latest
+  steps:
+    # Publikuj artefakt na stronie
+    - name: Publikacja na GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
