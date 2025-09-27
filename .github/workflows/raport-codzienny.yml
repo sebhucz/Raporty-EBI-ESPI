@@ -1,68 +1,58 @@
-# Nazwa naszego automatycznego zadania
-name: Codzienna Aktualizacja Strony
+# Nazwa naszego zadania
+name: Codzienna Aktualizacja Strony z Raportami
 
-# Kiedy zadanie ma się uruchamiać?
+# Kiedy zadanie ma się uruchamiać
 on:
   schedule:
-    # Uruchom codziennie o 7:00 rano UTC (9:00 czasu polskiego letniego)
+    # Codziennie o 7:00 UTC (9:00 rano czasu polskiego letniego)
     - cron:  '0 7 * * *'
-  # Pozwala też na ręczne uruchomienie z panelu Actions
+  # Pozwala na ręczne uruchomienie
   workflow_dispatch:
 
-# Definicja zadań do wykonania
+# Definicja zadań
 jobs:
-  build-and-deploy:
-    # Uruchom na najnowszej wirtualnej maszynie z systemem Linux
+  # Zadanie 1: Budowanie strony
+  build:
     runs-on: ubuntu-latest
-
-    # Kroki, które robot ma wykonać po kolei
     steps:
-      # Krok 1: Pobierz kod z naszego repozytorium do wirtualnej maszyny
+      # Krok 1.1: Pobranie kodu repozytorium
       - name: Pobieranie kodu
         uses: actions/checkout@v4
 
-      # Krok 2: Zainstaluj środowisko Python
+      # Krok 1.2: Ustawienie środowiska Python
       - name: Ustawienie Pythona
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # Krok 3: Zainstaluj potrzebne biblioteki
+      # Krok 1.3: Instalacja potrzebnych bibliotek
       - name: Instalacja bibliotek
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4
       
-      # Krok 4: Uruchom nasz główny skrypt, który wygeneruje plik index.html
-      - name: Uruchomienie skryptu agenta
+      # Krok 1.4: Uruchomienie naszego skryptu Python, który tworzy index.html
+      - name: Uruchomienie skryptu agent_page.py
         run: python agent_page.py
       
-      # Krok 5: Prześlij wygenerowaną stronę (artefakt) do GitHub Pages
-      - name: Wdrożenie na GitHub Pages
+      # Krok 1.5: Przygotowanie wygenerowanej strony do publikacji
+      - name: Przygotowanie artefaktu strony
         uses: actions/upload-pages-artifact@v3
         with:
-          path: . # Prześlij zawartość całego bieżącego folderu
+          path: .
 
-  # Definicja środowiska wdrożenia
+  # Zadanie 2: Publikacja strony
   deploy:
-    # Potrzebuje zadania 'build-and-deploy', aby się zakończyło
-    needs: build-and-deploy
-    
-    # Daj robotowi uprawnienia do zapisu na stronie (TUTAJ BYŁ BŁĄD)
+    needs: build # To zadanie musi poczekać, aż zadanie 'build' się zakończy
     permissions:
       pages: write
       id-token: write
-      
-    # Określ środowisko
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-      
-    # Uruchom na maszynie ubuntu
     runs-on: ubuntu-latest
-    
     steps:
-      # Opublikuj artefakt na stronie
+      # Krok 2.1: Publikacja przygotowanej strony
       - name: Publikacja na GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
