@@ -1,0 +1,24 @@
+name: Codzienna Aktualizacja Strony
+on:
+  schedule:
+    - cron:  '0 6 * * *' # 8:00 rano codziennie
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+      - run: pip install requests beautifulsoup4
+      - run: python agent_page.py
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: . }
+  deploy:
+    needs: build-and-deploy
+    permissions: { pages: write, id-token: write }
+    environment: { name: github-pages, url: ${{ steps.deployment.outputs.page_url }} }
+    runs-on: ubuntu-latest
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
