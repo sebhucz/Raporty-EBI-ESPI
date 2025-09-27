@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 # --- Konfiguracja ---
-DAYS_AGO = 30
+DAYS_AGO = 7
 OUTPUT_FILENAME = "raport_gieldowy.html"
 COMPANIES_CONFIG_FILE = "spolki.txt"
 RECIPIENTS_CONFIG_FILE = "odbiorcy.txt"
@@ -210,4 +210,5 @@ if __name__ == '__main__':
 
             if all_found_reports:
                 email_subject = f"Raport Giełdowy: Nowe komunikaty dla {', '.join(company_names_list)}"
+
                 send_email_with_gmail(report_html, email_subject, email_recipients)
