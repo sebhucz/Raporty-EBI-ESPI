@@ -16,7 +16,7 @@ RECIPIENTS_CONFIG_FILE = "odbiorcy.txt"
 
 # Konfiguracja modułu email
 GMAIL_USER = 'sebastian.huczek@gmail.com'
-GMAIL_APP_PASSWORD = 'tutaj_wklej_haslo_do_aplikacji'
+GMAIL_APP_PASSWORD = os.environ.get('GMAIL_APP_PASSWORD')
 RECIPIENT_EMAIL = 'sebastian.huczek@gmail.com'
 
 
@@ -212,3 +212,4 @@ if __name__ == '__main__':
                 email_subject = f"Raport Giełdowy: Nowe komunikaty dla {', '.join(company_names_list)}"
 
                 send_email_with_gmail(report_html, email_subject, email_recipients)
+
