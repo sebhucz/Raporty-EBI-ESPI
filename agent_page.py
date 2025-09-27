@@ -161,3 +161,4 @@ if __name__ == '__main__':
                 all_found_reports.extend(reports)
         
         generate_html_page(all_found_reports, company_names_list, start_date, end_date)
+
