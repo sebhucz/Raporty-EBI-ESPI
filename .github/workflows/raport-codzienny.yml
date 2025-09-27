@@ -35,6 +35,10 @@ jobs:
       - name: Uruchomienie skryptu agent_page.py
         run: python agent_page.py
       
+      # --- NOWY KROK DIAGNOSTYCZNY ---
+      - name: Sprawdź zawartość folderu po uruchomieniu skryptu
+        run: ls -l
+      
       # Krok 1.5: Przygotowanie wygenerowanej strony do publikacji
       - name: Przygotowanie artefaktu strony
         uses: actions/upload-pages-artifact@v3
@@ -43,7 +47,7 @@ jobs:
 
   # Zadanie 2: Publikacja strony
   deploy:
-    needs: build # To zadanie musi poczekać, aż zadanie 'build' się zakończy
+    needs: build
     permissions:
       pages: write
       id-token: write
@@ -52,7 +56,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      # Krok 2.1: Publikacja przygotowanej strony
       - name: Publikacja na GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
