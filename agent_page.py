@@ -1,6 +1,6 @@
 # To jest zawartość pliku: agent_page.py
 import requests
-from bs4 import BeautifulSoup # <-- TA LINIA BYŁA BRAKUJĄCA
+from bs4 import BeautifulSoup
 import datetime
 import os
 import urllib3
@@ -9,6 +9,8 @@ import urllib3
 DAYS_AGO = 7
 OUTPUT_FILENAME = "index.html"
 COMPANIES_CONFIG_FILE = "spolki.txt"
+# --- NOWOŚĆ: Nazwa Twojego repozytorium na GitHubie ---
+REPOSITORY_NAME = "Raporty-EBI-ESPI"
 
 # --- Funkcje wczytujące konfigurację z plików ---
 def load_companies_from_file(filename):
@@ -86,13 +88,32 @@ def generate_html_page(all_reports_data, monitored_companies, start_date, end_da
     end_date_str = end_date.strftime('%Y-%m-%d')
     
     html_content = f"""
-    <!DOCTYPE html><html lang="pl"><head><meta charset="UTF-8"><title>Raporty ESPI/EBI dla {company_names_str}</title>
-    <style>body{{font-family:Segoe UI,system-ui,sans-serif;margin:0;background-color:#f0f2f5}}.container{{max-width:850px;margin:2em auto;padding:1em 2em;background-color:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.05)}}h1{{color:#1d2d44;border-bottom:2px solid #e0e0e0;padding-bottom:0.5em}}h2{{font-size:1.1em;color:#555;font-weight:normal;line-height:1.6;}}.company-header{{font-size:1.5em;color:#005a87;margin-top:2em;margin-bottom:1em;padding-bottom:0.3em;border-bottom:2px solid #005a87}}.report-item{{border-bottom:1px solid #eee;padding:1.2em .5em;display:flex;align-items:center}}.report-item:last-child{{border-bottom:none}}.report-date{{font-weight:600;color:#333;margin-right:1.5em;min-width:100px}}.report-title a{{text-decoration:none;color:#0d6efd;font-size:1.05em;font-weight:500}}.report-title a:hover{{text-decoration:underline}}.footer{{text-align:center;margin-top:2em;color:#888;font-size:.9em}}</style>
-    </head><body><div class="container"><h1>Raporty bieżące i okresowe</h1>
-    <h2>
-        Monitorowane spółki: {company_names_str}<br>
-        Okres: Ostatnie <b>{DAYS_AGO} dni</b> (od {start_date_str} do {end_date_str})
-    </h2>
+    <!DOCTYPE html><html lang="pl">
+    <head>
+        <meta charset="UTF-8">
+        <title>Raporty ESPI/EBI dla {company_names_str}</title>
+        <base href="/{REPOSITORY_NAME}/">
+        <style>
+            body{{font-family:Segoe UI,system-ui,sans-serif;margin:0;background-color:#f0f2f5}}
+            .container{{max-width:850px;margin:2em auto;padding:1em 2em;background-color:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 2px 5px rgba(0,0,0,0.05)}}
+            h1{{color:#1d2d44;border-bottom:2px solid #e0e0e0;padding-bottom:0.5em}}
+            h2{{font-size:1.1em;color:#555;font-weight:normal;line-height:1.6;}}
+            .company-header{{font-size:1.5em;color:#005a87;margin-top:2em;margin-bottom:1em;padding-bottom:0.3em;border-bottom:2px solid #005a87}}
+            .report-item{{border-bottom:1px solid #eee;padding:1.2em .5em;display:flex;align-items:center}}
+            .report-item:last-child{{border-bottom:none}}
+            .report-date{{font-weight:600;color:#333;margin-right:1.5em;min-width:100px}}
+            .report-title a{{text-decoration:none;color:#0d6efd;font-size:1.05em;font-weight:500}}
+            .report-title a:hover{{text-decoration:underline}}
+            .footer{{text-align:center;margin-top:2em;color:#888;font-size:.9em}}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Raporty bieżące i okresowe</h1>
+            <h2>
+                Monitorowane spółki: {company_names_str}<br>
+                Okres: Ostatnie <b>{DAYS_AGO} dni</b> (od {start_date_str} do {end_date_str})
+            </h2>
     """
     if not all_reports_data:
         html_content+="<p><strong>Nie znaleziono żadnych nowych raportów w zadanym okresie.</strong></p>"
@@ -111,7 +132,8 @@ def generate_html_page(all_reports_data, monitored_companies, start_date, end_da
     <div class="footer">Strona wygenerowana: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</div></div></body></html>
     """
     try:
-        with open(OUTPUT_FILENAME,'w',encoding='utf-8') as f:f.write(html_content)
+        with open(OUTPUT_FILENAME,'w',encoding='utf-8') as f:
+            f.write(html_content)
         print(f"\nWygenerowano stronę: {OUTPUT_FILENAME}")
         return True
     except IOError as e:
