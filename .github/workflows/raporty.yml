@@ -1,0 +1,41 @@
+# Nazwa naszego automatycznego zadania
+name: Cotygodniowy Raport - raporty obsługiwanych spółek
+
+# Kiedy zadanie ma się uruchamiać?
+on:
+  schedule:
+    # Uruchom o 6:00 rano UTC (czyli 8:00 czasu polskiego letniego) w każdy poniedziałek
+    - cron:  '0 6 * * 1'
+  # Ten wpis pozwala też na ręczne uruchomienie z panelu Actions
+  workflow_dispatch:
+
+# Definicja zadań do wykonania
+jobs:
+  build:
+    # Uruchom na najnowszej wirtualnej maszynie z systemem Linux
+    runs-on: ubuntu-latest
+
+    # Kroki, które robot ma wykonać po kolei
+    steps:
+      # Krok 1: Pobierz kod z naszego repozytorium do wirtualnej maszyny
+      - name: Pobieranie kodu
+        uses: actions/checkout@v4
+
+      # Krok 2: Zainstaluj środowisko Python
+      - name: Ustawienie Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # Krok 3: Zainstaluj potrzebne biblioteki (requests i beautifulsoup4)
+      - name: Instalacja bibliotek
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+      
+      # Krok 4: Uruchom nasz główny skrypt
+      - name: Uruchomienie skryptu agenta
+        # Przekazujemy robotowi hasło z "sejfu", aby skrypt mógł je odczytać
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python agent.py
